@@ -4,12 +4,12 @@ import platform
 from datetime import datetime
 from datetime import date
 from programa_para_guardar import (
-    guardar_parqueaderos,
-    leer_parqueaderos,
-    guardar_conductor_vehículo,
-    leer_conductor_vehículo,
-    guardar_vehículo,
-    leer_vehículo
+    save_parking_lots,
+    read_parking_lots,
+    save_drivers,
+    read_drivers,
+    save_vehicle,
+    read_vehicle
 )
 
 #----------------------------------- FUNCIONALIDADES DE LA INTERFAX DE USUARIO --------------------------------------------------
@@ -20,7 +20,7 @@ def clear_screen():
     else:
         os.system('clear')
 
-def mostrar_menú_inicio():
+def show_start_menu():
     print("***********************************************************************")
     print("**************** BIENVENIDO AL PROGRAMA DE PARQUEADERO ****************")
     print("***********************************************************************")
@@ -28,21 +28,21 @@ def mostrar_menú_inicio():
     print("2. Salir del programa")
     print("\n***********************************************************************")
 
-def mostrar_menú_inicio_con_clase_creada():
+def show_start_menu_with_existing_parking():
     print("*"*71)
     print("**************** BIENVENIDO AL PROGRAMA DE PARQUEADERO ****************")
     print("*"*71)
-    print(f"\nYa ha creado un parqueadero anteriormente con el nombre de {parqueadero.nombre}.")
+    print(f"\nYa ha creado un parqueadero anteriormente con el nombre de {parking_lot.name}.")
     print()
     print("-"*71)
     input("\nPresione enter para ir al menú de opciones.")
 
-def mostrar_tipos_parqueaderos():
+def show_parking_types():
     print("\n------------------------- TIPOS DE PARQUEADERO -------------------------")
     print("1. 36 puestos\n2. 64 puestos\n3. 100 puestos")
     print("-"*72)
 
-def mostrar_menú_parqueadero():
+def show_parking_menu():
     print("**************************** MENÚ FUNCIONES ****************************")
     print("\n1. Registrar entrada vehículo")
     print("2. Mostrar puestos ocupados parqueadero")
@@ -56,165 +56,165 @@ def mostrar_menú_parqueadero():
     print("10. Salir del programa\n")
     print("*"*72)
  
-def mostrar_zonas_y_precios_del_parqueadero():
+def show_parking_zones_and_prices():
     print("\n---------------- TIPOS ZONAS PARQUEADERO ----------------")
     print()
-    for clave, valor in parqueadero.determinar_cantidad_zonas_parqueaderos().items():
-        print(f"{clave} : {valor}")
+    for key, value in parking_lot.determine_parking_zone_count().items():
+        print(f"{key} : {value}")
     print("-"*57)
 
 
 #--------------------------------------------------- INTERFAZ DE USUARIO ---------------------------------------------------
 
 if os.path.exists("parqueaderos.csv"):
-    lista_clase_parqueadero = leer_parqueaderos()
-    parqueadero = lista_clase_parqueadero[0]
-    mostrar_menú_inicio_con_clase_creada()
+    parking_list = read_parking_lots()
+    parking_lot = parking_list[0]
+    show_start_menu_with_existing_parking()
     if os.path.exists('registro_conductores.csv'):
-        parqueadero.registro_conductores = leer_conductor_vehículo()
+        parking_lot.driver_records = read_drivers()
 
         if os.path.exists('registro_vehículos.csv'):
-            parqueadero.registro_vehículos = leer_vehículo()
-            parqueadero.determinar_puestos_asignados_matriz()
+            parking_lot.vehicle_records = read_vehicle()
+            parking_lot.determine_assigned_spots_matrix()
 
 else:
     
 
-    mostrar_menú_inicio()
-    opción_seleccionada = input("Seleccione el número de la opción a realizar: ")
-    valores_válidos = ("1", "2")
-    while opción_seleccionada not in valores_válidos:
-        opción_seleccionada = input("Ingrese una opción válida: ")
+    show_start_menu()
+    selected_option = input("Seleccione el número de la opción a realizar: ")
+    valid_values = ("1", "2")
+    while selected_option not in valid_values:
+        selected_option = input("Ingrese una opción válida: ")
 
 
 
-    if opción_seleccionada == valores_válidos[0]: 
+    if selected_option == valid_values[0]: 
         clear_screen()
         print("\n--------------------------- DATOS NECESARIOS ---------------------------")
 
-        nombre_parqueadero = input("\n Escriba el nombre del parqueadero: ")
-        while len(nombre_parqueadero.strip()) == 0:
-            nombre_parqueadero = input("El nombre del parqueadero no puede estar vacío: ")
+        parking_name = input("\n Escriba el nombre del parqueadero: ")
+        while len(parking_name.strip()) == 0:
+            parking_name = input("El nombre del parqueadero no puede estar vacío: ")
         
         clear_screen()
-        mostrar_tipos_parqueaderos()
+        show_parking_types()
 
-        cantidad_puestos_parqueadero_cadena = input("Ahora, seleccione la cantidad de puestos del parqueadero teniendo en cuenta los tipos posibles: ")
-        while cantidad_puestos_parqueadero_cadena not in ("36", "64", "100") or len(cantidad_puestos_parqueadero_cadena.strip()) == 0:
-            cantidad_puestos_parqueadero_cadena = input("Ingrese una cantidad de puestos válida: ")
-        cantidad_puestos_parqueadero = int(cantidad_puestos_parqueadero_cadena)
+        parking_spot_count_string = input("Ahora, seleccione la cantidad de puestos del parqueadero teniendo en cuenta los tipos posibles: ")
+        while parking_spot_count_string not in ("36", "64", "100") or len(parking_spot_count_string.strip()) == 0:
+            parking_spot_count_string = input("Ingrese una cantidad de puestos válida: ")
+        parking_spot_count = int(parking_spot_count_string)
         print("-"* 70)
-        parqueadero = Parqueadero(nombre_parqueadero, cantidad_puestos_parqueadero)
-        opción_seleccionada = None
+        parking_lot = Parqueadero(parking_name, parking_spot_count)
+        selected_option = None
         print("Parqueadero creado con éxito!\n")
-        guardar_parqueaderos(parqueadero)
+        save_parking_lots(parking_lot)
 
-    elif opción_seleccionada == valores_válidos[1]: 
+    elif selected_option == valid_values[1]: 
         clear_screen()
-        opción_seleccionada = None
+        selected_option = None
         print("-"*72)
         print("--------------------- GRACIAS POR USAR EL PROGRAMA ---------------------")
         print("-"*72)
 
         raise SystemExit
 
-seguir_utilizando_programa = True
-while seguir_utilizando_programa:
+keep_using_program = True
+while keep_using_program:
     clear_screen()
-    mostrar_menú_parqueadero()
-    opción_seleccionada = input("\nSelecciones la opción que necesite: ")
+    show_parking_menu()
+    selected_option = input("\nSelecciones la opción que necesite: ")
     print()
-    while opción_seleccionada not in ("1","2","3","4","5","6","7","8","9","10"):
-        opción_seleccionada = input("Ingrese una opción válida: ")
+    while selected_option not in ("1","2","3","4","5","6","7","8","9","10"):
+        selected_option = input("Ingrese una opción válida: ")
     
 
 
-    if opción_seleccionada == "1":
+    if selected_option == "1":
         
-        seguir_registrando_vehículos = True
-        while seguir_registrando_vehículos:
+        keep_registering_vehicles = True
+        while keep_registering_vehicles:
             clear_screen()
             print("\n************************** REGISTRAR VEHÍCULO **************************")
             print()
             print("------------------ Datos Necesarios para el registro -------------------")
             print()
 
-            nombre_conductor = input("Ingrese el nombre del conductor del vehículo: ")
-            while len(nombre_conductor.strip()) == 0:
-                nombre_conductor = input("El nombre del conductor no puede estar vacío: ")
+            driver_name = input("Ingrese el nombre del conductor del vehículo: ")
+            while len(driver_name.strip()) == 0:
+                driver_name = input("El nombre del conductor no puede estar vacío: ")
 
             
-            fecha_de_nacimiento_conductor_cadena = input("Ingrese la fecha de nacimiento del conductor (AÑO-MES-DÍA), ejemplo: 2000-01-02: ")
-            seguir_pidiendo_fecha_nacimiento = True
-            while seguir_pidiendo_fecha_nacimiento: 
-                if len(fecha_de_nacimiento_conductor_cadena.strip()) == 0: 
-                    fecha_de_nacimiento_conductor_cadena = input("La fecha de nacimiento del conductor no puede estar vacía: ")
+            driver_birth_date_string = input("Ingrese la fecha de nacimiento del conductor (AÑO-MES-DÍA), ejemplo: 2000-01-02: ")
+            keep_asking_birth_date = True
+            while keep_asking_birth_date: 
+                if len(driver_birth_date_string.strip()) == 0: 
+                    driver_birth_date_string = input("La fecha de nacimiento del conductor no puede estar vacía: ")
 
-                elif len(fecha_de_nacimiento_conductor_cadena.strip()) != 0:
+                elif len(driver_birth_date_string.strip()) != 0:
                     try:
-                        fecha_de_nacimiento_conductor = datetime.strptime(fecha_de_nacimiento_conductor_cadena, "%Y-%m-%d")
+                        driver_birth_date = datetime.strptime(driver_birth_date_string, "%Y-%m-%d")
 
-                        fecha_de_nacimiento_conductor_date = fecha_de_nacimiento_conductor.date()
-                        if fecha_de_nacimiento_conductor_date > date.today(): 
-                            fecha_de_nacimiento_conductor_cadena = input("La fecha de nacimiento del conductor no puede ser mayor a la fecha actual, ingrese nuevamente: ")
+                        driver_birth_date_parsed = driver_birth_date.date()
+                        if driver_birth_date_parsed > date.today(): 
+                            driver_birth_date_string = input("La fecha de nacimiento del conductor no puede ser mayor a la fecha actual, ingrese nuevamente: ")
                         else:
                             break
 
                     except ValueError:
-                        fecha_de_nacimiento_conductor_cadena = input("Ingrese una fecha de nacimiento valida: ")
-            fecha_de_nacimiento_conductor = (datetime.strptime(fecha_de_nacimiento_conductor_cadena, "%Y-%m-%d")).date()
+                        driver_birth_date_string = input("Ingrese una fecha de nacimiento valida: ")
+            driver_birth_date = (datetime.strptime(driver_birth_date_string, "%Y-%m-%d")).date()
 
-            sexo_biológico_del_conductor = (input("Ingrese el sexo biológico del conductor del vehículo (M: Masculino, F: Femenino): ")).upper()
-            while len(sexo_biológico_del_conductor.strip()) == 0 or sexo_biológico_del_conductor not in ("M", "F"):
-                sexo_biológico_del_conductor = (input("Ingrese un valor valido para el sexo del conductor: ")).upper()
+            driver_biological_sex = (input("Ingrese el sexo biológico del conductor del vehículo (M: Masculino, F: Femenino): ")).upper()
+            while len(driver_biological_sex.strip()) == 0 or driver_biological_sex not in ("M", "F"):
+                driver_biological_sex = (input("Ingrese un valor valido para el sexo del conductor: ")).upper()
 
-            documento_identidad_conductor = input("Ingrese el documento de identidad del conductor: ")
-            while len(documento_identidad_conductor.strip()) == 0:
-                documento_identidad_conductor = input("El documento de identida del conductor no puede estar vacío, ingrese nuevamente: ")
+            driver_identity_document = input("Ingrese el documento de identidad del conductor: ")
+            while len(driver_identity_document.strip()) == 0:
+                driver_identity_document = input("El documento de identida del conductor no puede estar vacío, ingrese nuevamente: ")
 
             print("\n---------------------------- Datos vehículo ----------------------------")
-            marca_vehículo = input("\nIngrese la marca del vehículo a registrar: ")
-            while len(marca_vehículo.strip()) == 0:
-                marca_vehículo = input("No puede dejar esto vacío, ingrese una marca valida: ")
+            vehicle_brand = input("\nIngrese la marca del vehículo a registrar: ")
+            while len(vehicle_brand.strip()) == 0:
+                vehicle_brand = input("No puede dejar esto vacío, ingrese una marca valida: ")
 
-            matrícula_vehículo = input("Ingrese la matrícula del vehículo a registrar: ")
-            while len(matrícula_vehículo.strip()) == 0: 
-                matrícula_vehículo = input("No puede dejar esto vacío, ingrese una matrícula valida: ")
+            vehicle_license_plate = input("Ingrese la matrícula del vehículo a registrar: ")
+            while len(vehicle_license_plate.strip()) == 0: 
+                vehicle_license_plate = input("No puede dejar esto vacío, ingrese una matrícula valida: ")
 
-            año_fabricación_vehículo_cadena = input("Ingrese el año de fabricación del vehículo a asignar (Año : XXXX): ")
+            vehicle_manufacture_year_string = input("Ingrese el año de fabricación del vehículo a asignar (Año : XXXX): ")
             while True:
-                while len(año_fabricación_vehículo_cadena.strip()) == 0:
-                    año_fabricación_vehículo_cadena = input("No puede dejar esto vacío, ingrese nuevamente el año de fabricación del vehículo: ")
-                año_fabricación_vehículo = int(año_fabricación_vehículo_cadena)
+                while len(vehicle_manufacture_year_string.strip()) == 0:
+                    vehicle_manufacture_year_string = input("No puede dejar esto vacío, ingrese nuevamente el año de fabricación del vehículo: ")
+                vehicle_manufacture_year = int(vehicle_manufacture_year_string)
 
-                if año_fabricación_vehículo > int(date.today().year):
-                    año_fabricación_vehículo_cadena = input("El año de fabricación no puede ser mayor al año actual: ")
+                if vehicle_manufacture_year > int(date.today().year):
+                    vehicle_manufacture_year_string = input("El año de fabricación no puede ser mayor al año actual: ")
                 else: 
                     break
 
                 
-            mostrar_zonas_y_precios_del_parqueadero()
+            show_parking_zones_and_prices()
 
-            preferencia_precio_cadena = input("Ingrese el valor monetario de la zona dónde se quiere ubicar: ")
+            price_preference_string = input("Ingrese el valor monetario de la zona dónde se quiere ubicar: ")
             while True: 
-                if len(preferencia_precio_cadena.strip()) == 0: 
-                    preferencia_precio_cadena = input("La preferencia de precio no puede estar vacía,  ingrese nuevamente: ")
+                if len(price_preference_string.strip()) == 0: 
+                    price_preference_string = input("La preferencia de precio no puede estar vacía,  ingrese nuevamente: ")
                 
                 else: 
                     try: 
-                        preferencia_precio = int(preferencia_precio_cadena)
+                        price_preference = int(price_preference_string)
 
-                        if preferencia_precio not in parqueadero.determinar_cantidad_zonas_parqueaderos().values(): 
-                            preferencia_precio_cadena = input("La preferencia de precio debe estar entre los valores disponibles: ")
+                        if price_preference not in parking_lot.determine_parking_zone_count().values(): 
+                            price_preference_string = input("La preferencia de precio debe estar entre los valores disponibles: ")
                         
                         else: 
                             break
                     
                     except ValueError: 
-                        preferencia_precio_cadena = input("La preferencia de precio debe ser un número: ")
+                        price_preference_string = input("La preferencia de precio debe ser un número: ")
             
             try:
-                puesto_vehículo_asignado = parqueadero.asignar_puesto(preferencia_precio, nombre_conductor, fecha_de_nacimiento_conductor, sexo_biológico_del_conductor, marca_vehículo, matrícula_vehículo, año_fabricación_vehículo, documento_identidad_conductor)
+                assigned_vehicle_spot = parking_lot.assign_parking_spot(price_preference, driver_name, driver_birth_date, driver_biological_sex, vehicle_brand, vehicle_license_plate, vehicle_manufacture_year, driver_identity_document)
 
             except ValueError:
                 print("-"*72)
@@ -227,48 +227,48 @@ while seguir_utilizando_programa:
             
             print("-"*72)
             print("\nEl vehículo ha sido ingresado correctamente!!")
-            print(f"\nVehículo ubicado en puesto : {puesto_vehículo_asignado[0]}{puesto_vehículo_asignado[1]}")
+            print(f"\nVehículo ubicado en puesto : {assigned_vehicle_spot[0]}{assigned_vehicle_spot[1]}")
             print()
             print("-"*72)
 
-            seguir_registrando_cadena = input("¿Desea seguir registrando vehículos (Sí, No): ")
-            seguir_registrando = seguir_registrando_cadena.upper()
+            keep_registering_string = input("¿Desea seguir registrando vehículos (Sí, No): ")
+            keep_registering = keep_registering_string.upper()
             while True:
-                if len(seguir_registrando.strip()) == 0: 
-                    seguir_registrando = input("No puede dejar esta respuesta vacía, responda nuevamente: ")
+                if len(keep_registering.strip()) == 0: 
+                    keep_registering = input("No puede dejar esta respuesta vacía, responda nuevamente: ")
                 
                 else:
-                    while seguir_registrando not in ("SÍ, SI, NO"): 
-                        seguir_registrando = (input("Ingrese una respuesta valida (Sí, No): ")).upper()
+                    while keep_registering not in ("SÍ, SI, NO"): 
+                        keep_registering = (input("Ingrese una respuesta valida (Sí, No): ")).upper()
             
                     break
-            if seguir_registrando == "NO":
-                seguir_registrando_vehículos = False
+            if keep_registering == "NO":
+                keep_registering_vehicles = False
 
 
-    elif opción_seleccionada == "2":
+    elif selected_option == "2":
         clear_screen()
         print("---------------------- REPRESENTACIÓN PARQUEADERO -----------------------")
         print()
-        matriz_parqueadero_mostrar = parqueadero.imprimir_matriz_cuadrada()
+        parking_matrix_to_show = parking_lot.print_square_matrix()
         print()
         print("-"*73)
         print("\nPresiona enter para volver al menú principal")
         input("")
 
 
-    elif opción_seleccionada == "3":
+    elif selected_option == "3":
         clear_screen()
         print("\n*************************** BUSCAR  VEHÍCULO ***************************")
-        matrícula_vehículo_a_buscar = input("\nIngrese la matrícula del vehículo a buscar: ")
-        while len(matrícula_vehículo_a_buscar.strip()) == 0: 
-            matrícula_vehículo_a_buscar = input("Debe digitar una matrícula para buscar, ingrese nuevamente: ")
+        vehicle_license_plate_to_find = input("\nIngrese la matrícula del vehículo a buscar: ")
+        while len(vehicle_license_plate_to_find.strip()) == 0: 
+            vehicle_license_plate_to_find = input("Debe digitar una matrícula para buscar, ingrese nuevamente: ")
 
-        ubicación_vehículo = parqueadero.determinar_ubicación_vehículo(matrícula_vehículo_a_buscar)
-        if ubicación_vehículo is not None:
+        vehicle_location = parking_lot.determine_vehicle_location(vehicle_license_plate_to_find)
+        if vehicle_location is not None:
             print("-"*72)
             print()
-            print(f"La ubicación del vehículo con matrícula '{matrícula_vehículo_a_buscar}' es: {ubicación_vehículo}")
+            print(f"La ubicación del vehículo con matrícula '{vehicle_license_plate_to_find}' es: {vehicle_location}")
             print()
             print("-"*72)
             print("\nPresiona enter para volver al menú principal")
@@ -276,62 +276,62 @@ while seguir_utilizando_programa:
         else: 
             print("-"*72)
             print()
-            print(f"El vehículo con matrícula {matrícula_vehículo_a_buscar} no se encuentra actualmente en el parqueadero.")
+            print(f"El vehículo con matrícula {vehicle_license_plate_to_find} no se encuentra actualmente en el parqueadero.")
             print()
             print("-"*72)
             print("\nPresiona enter para volver al menú principal")
             input("")
 
-    elif opción_seleccionada == "4":
+    elif selected_option == "4":
         clear_screen()
-        seguir_registrando_salidas_de_vehículo = True
-        while seguir_registrando_salidas_de_vehículo:
+        keep_registering_vehicle_exits = True
+        while keep_registering_vehicle_exits:
             print("********************** REGISTRAR SALIDA VEHÍCULO ***********************")
-            matrícula_vehículo_a_registrar_salida = input("\nIngrese la matrícula del vehículo que se le va a registrar la salida : ")
-            while len(matrícula_vehículo_a_registrar_salida.strip()) == 0: 
-                    matrícula_vehículo_a_registrar_salida = input("\nDebe digitar una matrícula, ingrese nuevamente: ")
+            vehicle_license_plate_for_exit = input("\nIngrese la matrícula del vehículo que se le va a registrar la salida : ")
+            while len(vehicle_license_plate_for_exit.strip()) == 0: 
+                    vehicle_license_plate_for_exit = input("\nDebe digitar una matrícula, ingrese nuevamente: ")
                  
             try:
-                parqueadero_hora_egreso = parqueadero.determinar_hora_egreso_vehículo(matrícula_vehículo_a_registrar_salida)
-                horas_estadas_vehículo = parqueadero.determinar_horas_vehículo_parqueadero(matrícula_vehículo_a_registrar_salida)
-                valor_a_pagar_vehículo = parqueadero.determinar_valor_a_pagar_vehículo(matrícula_vehículo_a_registrar_salida)
+                parking_exit_time = parking_lot.determine_vehicle_exit_time(vehicle_license_plate_for_exit)
+                vehicle_stay_hours = parking_lot.determine_vehicle_parking_hours(vehicle_license_plate_for_exit)
+                vehicle_amount_to_pay = parking_lot.determine_vehicle_amount_to_pay(vehicle_license_plate_for_exit)
 
             except ValueError:
                 print("-"*72)
-                print(f"\nEL vehículo con matrícula {matrícula_vehículo_a_registrar_salida} no se encuentra en el parqueadero")
+                print(f"\nEL vehículo con matrícula {vehicle_license_plate_for_exit} no se encuentra en el parqueadero")
                 print()
                 print("-"*72)
                 print("\nPresiona enter para volver al menú principal")
                 input("")
-                seguir_registrando_salidas_de_vehículo = False
+                keep_registering_vehicle_exits = False
                 break
             
             print()
             print("-"*72)
             print()
-            print(f"Se ha registrado la salida del vehículo con matrícula {matrícula_vehículo_a_registrar_salida} con éxito")
-            print(f"\nHoras en el parqueadero: {horas_estadas_vehículo}")
-            print(f"Valor a pagar: {valor_a_pagar_vehículo}")
+            print(f"Se ha registrado la salida del vehículo con matrícula {vehicle_license_plate_for_exit} con éxito")
+            print(f"\nHoras en el parqueadero: {vehicle_stay_hours}")
+            print(f"Valor a pagar: {vehicle_amount_to_pay}")
             print()        
             print("-"*72)
             print("\nPresiona enter para volver al menú principal")
             input("")
-            seguir_registrando_salidas_de_vehículo = False
+            keep_registering_vehicle_exits = False
 
-    elif opción_seleccionada == "5":
+    elif selected_option == "5":
         clear_screen()
         print("---------------------- REPORTE GENERAL PARQUEADERO ----------------------")
-        print(f"\nTotal dinero ingresado: {parqueadero.determinar_dinero_ingresado()}")
-        print(f"Cantidad vehículos que han ingresado: {parqueadero.determinar_cantidad_vehículos_ingresados()}")
-        print(f"Cantidad de puestos totales vendidos: {parqueadero.determinar_cantidad_puestos_utilizados()}")
+        print(f"\nTotal dinero ingresado: {parking_lot.determine_received_money()}")
+        print(f"Cantidad vehículos que han ingresado: {parking_lot.determine_vehicles_entered_count()}")
+        print(f"Cantidad de puestos totales vendidos: {parking_lot.determine_used_spot_count()}")
         print()
         print("-"*72)
         print("\nPresiona enter para volver al menú principal")
         input("")
 
-    elif opción_seleccionada == "6":
+    elif selected_option == "6":
         clear_screen()
-        if parqueadero.determinar_zona_más_utilizada() is None:
+        if parking_lot.determine_most_used_zone() is None:
             print("-------------------------- ZONA MÁS UTILIZADA --------------------------")
             print("\nNo hay registro de vehículos ingresados en el parqueadero para determinar esto.")
             print("-"*72)
@@ -339,49 +339,49 @@ while seguir_utilizando_programa:
             input("")
         else:
             print("-------------------------- ZONA MÁS UTILIZADA --------------------------")
-            print(f"\nLa zona más utilizada en el parqueadero (Zona por precios) es: {parqueadero.determinar_zona_más_utilizada()}")
+            print(f"\nLa zona más utilizada en el parqueadero (Zona por precios) es: {parking_lot.determine_most_used_zone()}")
             print()
             print("-"*72)
             print("\nPresiona enter para volver al menú principal")
             input("")
 
-    elif opción_seleccionada == "7": 
+    elif selected_option == "7": 
         clear_screen()
         print("-------------------- TASA OCUPACIÓN DEL PARQUEADERO --------------------")
-        print(f"\n La tasa de ocupación del parqueadero es de: {parqueadero.determinar_tasa_ocupación()}%")
+        print(f"\n La tasa de ocupación del parqueadero es de: {parking_lot.determine_occupancy_rate()}%")
         print()
         print("-"*72)
         print("\nPresiona enter para volver al menú principal")
         input("")
         
 
-    elif opción_seleccionada == "8":
+    elif selected_option == "8":
         clear_screen()
         print("-------------- TASA OCUPACIÓN POR GENERO EN EL PARQUEADERO --------------")
-        print(f"\nPorcentaje de conductores hombres en el parqueadero: {parqueadero.determinar_tasa_ocupación_hombres()}%")
-        print(f"Porcenta de conductores mujeres en el parqueadero: {parqueadero.determinar_tasa_ocupación_mujeres()}%")
+        print(f"\nPorcentaje de conductores hombres en el parqueadero: {parking_lot.determine_male_occupancy_rate()}%")
+        print(f"Porcenta de conductores mujeres en el parqueadero: {parking_lot.determine_female_occupancy_rate()}%")
         print()
         print("-"*72)
         print("\nPresiona enter para volver al menú principal")
         input("")
 
-    elif opción_seleccionada == "9":
+    elif selected_option == "9":
         clear_screen()
         print("-------------- TASA OCUPACIÓN POR MARCA Y AÑO FABRICACIÓN DE LOS VEHÍCULOS EN EL PARQUEADERO --------------")
-        print(f"\nTasa de ocupación por marca: \n{parqueadero.determinar_porcentaje_de_vehículos_por_marca()}")
-        print(f"\nTasa de ocupación por año de fabricación: \n{parqueadero.determinar_porcentaje_de_vehículos_por_año_fabricación()}")
+        print(f"\nTasa de ocupación por marca: \n{parking_lot.determine_vehicle_percentage_by_brand()}")
+        print(f"\nTasa de ocupación por año de fabricación: \n{parking_lot.determine_vehicle_percentage_by_manufacture_year()}")
         print()
         print("-"*107)
         print("\nPresiona enter para volver al menú principal")
         input("")
 
-    elif opción_seleccionada == "10":
+    elif selected_option == "10":
         clear_screen
-        seguir_utilizando_programa = False
+        keep_using_program = False
         print("*"*72)
         print("********************* GRACIAS POR USAR EL PROGRAMA *********************")
         print("*"*72)
         print()
 
-    guardar_conductor_vehículo(parqueadero.registro_conductores)
-    guardar_vehículo(parqueadero.registro_vehículos)
+    save_drivers(parking_lot.driver_records)
+    save_vehicle(parking_lot.vehicle_records)
