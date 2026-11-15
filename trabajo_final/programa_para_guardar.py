@@ -7,106 +7,106 @@ import ast
 import csv
 
 
-def guardar_parqueaderos(parqueadero : Parqueadero):
-    lista_parqueadero = []
-    lista_parqueadero.append(parqueadero)
+def save_parking_lots(parking_lot : Parqueadero):
+    parking_list = []
+    parking_list.append(parking_lot)
 
-    with open("parqueaderos.csv", mode= 'w', newline= '') as archivo: 
-        nombres_columnas = ['nombre_parqueadero', 'cantidad_puestos_parqueadero']
-        escritor = csv.DictWriter(archivo, fieldnames=nombres_columnas)
-        escritor.writeheader()
+    with open("parqueaderos.csv", mode= 'w', newline= '') as file: 
+        column_names = ['nombre_parqueadero', 'cantidad_puestos_parqueadero']
+        writer = csv.DictWriter(file, fieldnames=column_names)
+        writer.writeheader()
 
-        for parqueadero in lista_parqueadero:
-            escritor.writerow({
-                'nombre_parqueadero' : parqueadero.nombre, 
-                'cantidad_puestos_parqueadero' : parqueadero.cantidad_puestos_parqueadero
+        for parking_lot in parking_list:
+            writer.writerow({
+                'nombre_parqueadero' : parking_lot.name, 
+                'cantidad_puestos_parqueadero' : parking_lot.parking_spot_count
             })
 
-def leer_parqueaderos() -> list:
-    parqueaderos_registrados = []
-    with open("parqueaderos.csv", mode='r', newline='') as archivo: 
-        lector = csv.DictReader(archivo)
+def read_parking_lots() -> list:
+    registered_parking_lots = []
+    with open("parqueaderos.csv", mode='r', newline='') as file: 
+        reader = csv.DictReader(file)
 
-        for fila in lector: 
-            nombre_parqueadero = fila['nombre_parqueadero']
-            cantidad_puestos_parqueadero = int(fila['cantidad_puestos_parqueadero'])
-            parqueaderos_registrados.append(Parqueadero(nombre_parqueadero, cantidad_puestos_parqueadero))
-    return parqueaderos_registrados
+        for row in reader: 
+            parking_name = row['nombre_parqueadero']
+            parking_spot_count = int(row['cantidad_puestos_parqueadero'])
+            registered_parking_lots.append(Parqueadero(parking_name, parking_spot_count))
+    return registered_parking_lots
 
-def guardar_conductor_vehículo(registro_conductores : list):
-    with open('registro_conductores.csv', mode='w', newline='') as archivo: 
-        nombres_columnas = ['nombre_conductor', 'fecha_nacimiento_conductor', 'sexo_conductor', 'documento_identidad_conductor']
-        escritor = csv.DictWriter(archivo, fieldnames=nombres_columnas)
-        escritor.writeheader()
+def save_drivers(driver_records : list):
+    with open('registro_conductores.csv', mode='w', newline='') as file: 
+        column_names = ['nombre_conductor', 'fecha_nacimiento_conductor', 'sexo_conductor', 'documento_identidad_conductor']
+        writer = csv.DictWriter(file, fieldnames=column_names)
+        writer.writeheader()
 
-        for conductor in registro_conductores: 
-            escritor.writerow({
-                'nombre_conductor' : conductor.nombre_conductor,
-                'fecha_nacimiento_conductor' : conductor.fecha_nacimiento_conductor,
-                'sexo_conductor' : conductor.sexo_conductor,
-                'documento_identidad_conductor' : conductor.documento_identidad_conductor
+        for driver in driver_records: 
+            writer.writerow({
+                'nombre_conductor' : driver.driver_name,
+                'fecha_nacimiento_conductor' : driver.driver_birth_date,
+                'sexo_conductor' : driver.driver_sex,
+                'documento_identidad_conductor' : driver.driver_identity_document
             })
 
-def leer_conductor_vehículo() -> list: 
-    registro_conductores = []
-    with open('registro_conductores.csv', mode='r', newline='') as archivo:
-        lector = csv.DictReader(archivo)
+def read_drivers() -> list: 
+    driver_records = []
+    with open('registro_conductores.csv', mode='r', newline='') as file:
+        reader = csv.DictReader(file)
 
-        for fila in lector: 
-            nombre_conductor = fila['nombre_conductor']
-            fecha_nacimiento_conductor = (datetime.strptime(fila['fecha_nacimiento_conductor'], "%Y-%m-%d")).date()
-            sexo_conductor = fila['sexo_conductor']
-            documento_identidad_conductor = fila['documento_identidad_conductor']
-            registro_conductores.append(Conductor(nombre_conductor, fecha_nacimiento_conductor, sexo_conductor, documento_identidad_conductor))
-        return registro_conductores
+        for row in reader: 
+            driver_name = row['nombre_conductor']
+            driver_birth_date = (datetime.strptime(row['fecha_nacimiento_conductor'], "%Y-%m-%d")).date()
+            driver_sex = row['sexo_conductor']
+            driver_identity_document = row['documento_identidad_conductor']
+            driver_records.append(Conductor(driver_name, driver_birth_date, driver_sex, driver_identity_document))
+        return driver_records
 
-def guardar_vehículo(lista_vehículos : list): 
-    with open('registro_vehículos.csv', mode='w', newline='') as archivo: 
-        nombres_columnas = ['marca_vehículo', 'matrícula_vehículo','año_fabricación_vehículo', 'documento_identidad_conductor_vehículo', 
+def save_vehicle(vehicle_list : list): 
+    with open('registro_vehículos.csv', mode='w', newline='') as file: 
+        column_names = ['marca_vehículo', 'matrícula_vehículo','año_fabricación_vehículo', 'documento_identidad_conductor_vehículo', 
                             'hora_ingreso_vehículo', 'hora_egreso_vehículo', 'puesto_asignado']
-        escritor = csv.DictWriter(archivo, fieldnames=nombres_columnas)
-        escritor.writeheader()
+        writer = csv.DictWriter(file, fieldnames=column_names)
+        writer.writeheader()
 
-        for vehículo in lista_vehículos:
-            hora_ingreso_str = vehículo.hora_ingreso_vehículo.strftime('%Y-%m-%d %H:%M:%S') if vehículo.hora_ingreso_vehículo else ''
-            hora_egreso_str = vehículo.hora_egreso_vehículo.strftime('%Y-%m-%d %H:%M:%S') if vehículo.hora_egreso_vehículo else ''
+        for vehicle in vehicle_list:
+            entry_time_string = vehicle.vehicle_entry_time.strftime('%Y-%m-%d %H:%M:%S') if vehicle.vehicle_entry_time else ''
+            exit_time_string = vehicle.vehicle_exit_time.strftime('%Y-%m-%d %H:%M:%S') if vehicle.vehicle_exit_time else ''
        
-            escritor.writerow({
-                'marca_vehículo' : vehículo.marca_vehículo,
-                'matrícula_vehículo' : vehículo.matrícula_vehículo,
-                'año_fabricación_vehículo' : vehículo.año_fabricación_vehículo,
-                'documento_identidad_conductor_vehículo': vehículo.dueño_del_vehículo,
-                'hora_ingreso_vehículo': hora_ingreso_str,
-                'hora_egreso_vehículo': hora_egreso_str,
-                'puesto_asignado' : vehículo.puesto_asignado 
+            writer.writerow({
+                'marca_vehículo' : vehicle.vehicle_brand,
+                'matrícula_vehículo' : vehicle.vehicle_license_plate,
+                'año_fabricación_vehículo' : vehicle.vehicle_manufacture_year,
+                'documento_identidad_conductor_vehículo': vehicle.vehicle_owner,
+                'hora_ingreso_vehículo': entry_time_string,
+                'hora_egreso_vehículo': exit_time_string,
+                'puesto_asignado' : vehicle.assigned_spot 
 
             })
 
-def leer_vehículo() -> list:
-    lista_vehículos = []
-    with open('registro_vehículos.csv', mode='r', newline='') as archivo:
-        lector = csv.DictReader(archivo)
-        for fila in lector: 
-            marca_vehículo = fila['marca_vehículo']
-            matrícula_vehículo = fila['matrícula_vehículo']
-            año_fabricación_vehículo = int(fila['año_fabricación_vehículo'])
-            dueño_vehículo = fila['documento_identidad_conductor_vehículo']
+def read_vehicle() -> list:
+    vehicle_list = []
+    with open('registro_vehículos.csv', mode='r', newline='') as file:
+        reader = csv.DictReader(file)
+        for row in reader: 
+            vehicle_brand = row['marca_vehículo']
+            vehicle_license_plate = row['matrícula_vehículo']
+            vehicle_manufacture_year = int(row['año_fabricación_vehículo'])
+            vehicle_owner = row['documento_identidad_conductor_vehículo']
 
-            if fila['hora_ingreso_vehículo']:
-                hora_ingreso_vehículo = datetime.strptime(fila['hora_ingreso_vehículo'], '%Y-%m-%d %H:%M:%S')
+            if row['hora_ingreso_vehículo']:
+                vehicle_entry_time = datetime.strptime(row['hora_ingreso_vehículo'], '%Y-%m-%d %H:%M:%S')
             else:
-                hora_ingreso_vehículo = None
+                vehicle_entry_time = None
 
-            if fila['hora_egreso_vehículo']:
-                hora_egreso_vehículo = datetime.strptime(fila['hora_egreso_vehículo'], '%Y-%m-%d %H:%M:%S')
+            if row['hora_egreso_vehículo']:
+                vehicle_exit_time = datetime.strptime(row['hora_egreso_vehículo'], '%Y-%m-%d %H:%M:%S')
             else:
-                hora_egreso_vehículo = None
+                vehicle_exit_time = None
 
-            puesto_asignado = ast.literal_eval(fila['puesto_asignado'])
-            lista_vehículos.append(Vehículo(marca_vehículo, matrícula_vehículo, año_fabricación_vehículo, dueño_vehículo))
+            assigned_spot = ast.literal_eval(row['puesto_asignado'])
+            vehicle_list.append(Vehículo(vehicle_brand, vehicle_license_plate, vehicle_manufacture_year, vehicle_owner))
             
-            lista_vehículos[(len(lista_vehículos)-1)].hora_ingreso_vehículo = hora_ingreso_vehículo
-            lista_vehículos[(len(lista_vehículos)-1)].hora_egreso_vehículo = hora_egreso_vehículo
-            lista_vehículos[(len(lista_vehículos)-1)].puesto_asignado = puesto_asignado
+            vehicle_list[(len(vehicle_list)-1)].vehicle_entry_time = vehicle_entry_time
+            vehicle_list[(len(vehicle_list)-1)].vehicle_exit_time = vehicle_exit_time
+            vehicle_list[(len(vehicle_list)-1)].assigned_spot = assigned_spot
 
-        return lista_vehículos
+        return vehicle_list

@@ -5,446 +5,446 @@ from clase_vehículo import Vehículo
 import math
 
 class Parqueadero:
-    def __init__(self, nombre : str,  cantidad_puestos_parqueadero : int):
+    def __init__(self, name : str,  parking_spot_count : int):
 
-        if len(nombre.strip()) == 0: 
+        if len(name.strip()) == 0: 
             raise ValueError("El nombre no puede ser una cadena vacía")
 
-        if cantidad_puestos_parqueadero not in (36, 64 , 100):
+        if parking_spot_count not in (36, 64 , 100):
             raise ValueError("El largo del parqueadero debe estar en el rango estipulado")
         
-        largo_parqueadero = int(math.sqrt(cantidad_puestos_parqueadero))
+        parking_side_length = int(math.sqrt(parking_spot_count))
         
-        self.nombre = nombre
-        self.cantidad_puestos_parqueadero = cantidad_puestos_parqueadero
-        self.filas = largo_parqueadero
-        self.columnas_filas = largo_parqueadero
-        self.letras_filas = []
-        for i in range(largo_parqueadero):
-            self.letras_filas.append(chr(i+65))
-        self.parqueadero = [[None for _ in range(largo_parqueadero)] for _ in range(largo_parqueadero)]
-        self.registro_conductores = []
-        self.registro_vehículos = []
-        self.precios = []
+        self.name = name
+        self.parking_spot_count = parking_spot_count
+        self.rows = parking_side_length
+        self.columns = parking_side_length
+        self.row_letters = []
+        for i in range(parking_side_length):
+            self.row_letters.append(chr(i+65))
+        self.parking_lot = [[None for _ in range(parking_side_length)] for _ in range(parking_side_length)]
+        self.driver_records = []
+        self.vehicle_records = []
+        self.prices = []
 
-    def determinar_puestos_asignados_matriz(self): 
-        for vehículo in self.registro_vehículos: 
-            if vehículo.hora_egreso_vehículo is None:
-                índice_letra_puesto = self.letras_filas.index(vehículo.puesto_asignado[0])
-                índice_número_puesto = (int(vehículo.puesto_asignado[1])-1)
-                self.parqueadero[índice_letra_puesto][índice_número_puesto] = vehículo
+    def determine_assigned_spots_matrix(self): 
+        for vehicle in self.vehicle_records: 
+            if vehicle.vehicle_exit_time is None:
+                spot_letter_index = self.row_letters.index(vehicle.assigned_spot[0])
+                spot_number_index = (int(vehicle.assigned_spot[1])-1)
+                self.parking_lot[spot_letter_index][spot_number_index] = vehicle
 
     #--------------------------------- HISTOyoRIA USUARIO #1 -------------------------------------------
         
-    def determinar_precio_mínimo_puesto_parqueadero(self):
-        precio_mínimo = len(self.parqueadero)*1000
-        return precio_mínimo
+    def determine_min_spot_price(self):
+        min_price = len(self.parking_lot)*1000
+        return min_price
 
-    def determinar_precio_máximo_puesto_parqueadero(self):
-        precio_máximo = self.determinar_precio_mínimo_puesto_parqueadero() * (len(self.parqueadero)/2)
-        return precio_máximo
+    def determine_max_spot_price(self):
+        max_price = self.determine_min_spot_price() * (len(self.parking_lot)/2)
+        return max_price
     
-    def calcular_costo_puesto(self,letra:str, número_columna:int) -> float:
+    def calculate_spot_cost(self,letter:str, column_number:int) -> float:
 
-        if len(letra.strip()) == 0: 
+        if len(letter.strip()) == 0: 
             raise ValueError("La cadena con la letra del puesto no puede estar vacía")
         
-        if letra not in self.letras_filas: 
+        if letter not in self.row_letters: 
             raise ValueError("La cadena con la letra del puesto debe estar entre el rango estipulado")
         
-        if número_columna not in range((self.columnas_filas)): 
+        if column_number not in range((self.columns)): 
             raise ValueError("El número de la columna debe estar entre el rango aestipulado")
         
-        fila = self.letras_filas.index(letra)
-        columna = número_columna
+        row = self.row_letters.index(letter)
+        column = column_number
 
-        filas_distancia_al_borde_arriba = fila
-        filas_distancia_al_borde_abajo = (len(self.parqueadero)-1)-fila
-        if filas_distancia_al_borde_arriba > filas_distancia_al_borde_abajo:
-            menor_distancia_fila = filas_distancia_al_borde_abajo
+        rows_distance_to_top_edge = row
+        rows_distance_to_bottom_edge = (len(self.parking_lot)-1)-row
+        if rows_distance_to_top_edge > rows_distance_to_bottom_edge:
+            min_row_distance = rows_distance_to_bottom_edge
         else:
-            menor_distancia_fila = filas_distancia_al_borde_arriba
+            min_row_distance = rows_distance_to_top_edge
         #Determina que tan cerca está de los bordes de manera vertical
 
-        columna_distancia_al_borde_izquierda = columna
-        columna_distancia_al_borde_derecha = (len(self.parqueadero[0])-1)-columna
-        if columna_distancia_al_borde_izquierda > columna_distancia_al_borde_derecha:
-            menor_distancia_columna = columna_distancia_al_borde_derecha
+        column_distance_to_left_edge = column
+        column_distance_to_right_edge = (len(self.parking_lot[0])-1)-column
+        if column_distance_to_left_edge > column_distance_to_right_edge:
+            min_column_distance = column_distance_to_right_edge
         else:
-            menor_distancia_columna = columna_distancia_al_borde_izquierda
+            min_column_distance = column_distance_to_left_edge
         #determina que tan cerca está de los bordes de manera horizontal
 
-        if menor_distancia_fila > menor_distancia_columna:
-            menor_distancia_a_un_borde = menor_distancia_columna
+        if min_row_distance > min_column_distance:
+            min_distance_to_edge = min_column_distance
         else:
-            menor_distancia_a_un_borde = menor_distancia_fila
+            min_distance_to_edge = min_row_distance
         #Determina que tan cerca está a un borde en general, el valor 0 es que está pegado
-        precio_puesto = self.determinar_precio_máximo_puesto_parqueadero() - self.determinar_precio_mínimo_puesto_parqueadero() * menor_distancia_a_un_borde
-        return int(precio_puesto)
+        spot_price = self.determine_max_spot_price() - self.determine_min_spot_price() * min_distance_to_edge
+        return int(spot_price)
     
     #--------------------------------- HISTORIA USUARIO #2 -------------------------------------------
-    def asignar_vehículo(self, marca_vehículo, matrícula_vehículo, año_fabricación_vehículo, documento_identidad_conductor_vehículo):
+    def assign_vehicle(self, vehicle_brand, vehicle_license_plate, vehicle_manufacture_year, vehicle_driver_identity_document):
         
-        vehículo = Vehículo(marca_vehículo, matrícula_vehículo, año_fabricación_vehículo, documento_identidad_conductor_vehículo)
-        self.registro_vehículos.append(vehículo)    
+        vehicle = Vehículo(vehicle_brand, vehicle_license_plate, vehicle_manufacture_year, vehicle_driver_identity_document)
+        self.vehicle_records.append(vehicle)    
                                                               
-    def determinar_años_de_auto(self, año_fabricación : int) -> int:
-        año_actual = int(date.today().year)
-        if año_fabricación <= año_actual:
-            edad_en_años = año_actual - año_fabricación
-            return edad_en_años
+    def determine_vehicle_age_years(self, manufacture_year : int) -> int:
+        current_year = int(date.today().year)
+        if manufacture_year <= current_year:
+            age_in_years = current_year - manufacture_year
+            return age_in_years
         else: 
             raise ValueError("El año de fabricación del vehículo no puede ser mayor que el año actual")
            
-    def determinar_precios_zonas_parqueadero(self): 
-        precio_mínimo = self.determinar_precio_mínimo_puesto_parqueadero()
-        for zona in range(int(len(self.parqueadero)/2)):
-            precio_zona = precio_mínimo*(zona+1)
-            self.precios.append(precio_zona)
+    def determine_parking_zone_prices(self): 
+        min_price = self.determine_min_spot_price()
+        for zone in range(int(len(self.parking_lot)/2)):
+            zone_price = min_price*(zone+1)
+            self.prices.append(zone_price)
 
-    def determinar_hora_ingreso_vehículo(self, matrícula_vehículo : str):
-        if len(matrícula_vehículo.strip()) == 0: 
+    def determine_vehicle_entry_time(self, vehicle_license_plate : str):
+        if len(vehicle_license_plate.strip()) == 0: 
             raise ValueError("la cadena con la matrícula del vehículo no puede estar vacía")
         
-        for fila in range(0, self.filas):
-            for columna in range(0, self.columnas_filas):
-                if self.parqueadero[fila][columna] is not None:
-                    if self.parqueadero[fila][columna].matrícula_vehículo == matrícula_vehículo:
-                        self.parqueadero[fila][columna].hora_ingreso_vehículo = datetime.now()
-                        return self.parqueadero[fila][columna].hora_ingreso_vehículo
+        for row in range(0, self.rows):
+            for column in range(0, self.columns):
+                if self.parking_lot[row][column] is not None:
+                    if self.parking_lot[row][column].vehicle_license_plate == vehicle_license_plate:
+                        self.parking_lot[row][column].vehicle_entry_time = datetime.now()
+                        return self.parking_lot[row][column].vehicle_entry_time
                     
 
-    def asignar_puesto(self, precio : int,nombre_conductor:str, fecha_nacimiento_conductor:date, sexo_conductor:str, marca_vehículo:str, 
-                       matrícula_vehículo:str, año_fabricación_vehículo :int, documento_identidad_del_conductor : str):
-        self.determinar_precios_zonas_parqueadero()
+    def assign_parking_spot(self, price : int,driver_name:str, driver_birth_date:date, driver_sex:str, vehicle_brand:str, 
+                       vehicle_license_plate:str, vehicle_manufacture_year :int, driver_identity_document : str):
+        self.determine_parking_zone_prices()
         
-        if precio not in self.precios:
+        if price not in self.prices:
             raise ValueError("La preferencia de precio debe estar entre el rango aceptable")
         
-        vehículo_en_parqueadero = False
-        for fila in range(0, self.filas):
-            for columna in range(0, self.columnas_filas):
-                if self.parqueadero[fila][columna] is not None:
-                    if self.parqueadero[fila][columna].matrícula_vehículo == matrícula_vehículo: 
-                        vehículo_en_parqueadero = True
+        vehicle_in_parking = False
+        for row in range(0, self.rows):
+            for column in range(0, self.columns):
+                if self.parking_lot[row][column] is not None:
+                    if self.parking_lot[row][column].vehicle_license_plate == vehicle_license_plate: 
+                        vehicle_in_parking = True
 
-        if vehículo_en_parqueadero: 
+        if vehicle_in_parking: 
             raise ValueError("El vehículo a asignar en el parqueadero noo puede ser uno que ya está asignado")
          
-        conductor = Conductor(nombre_conductor, fecha_nacimiento_conductor, sexo_conductor, documento_identidad_del_conductor)
-        asignar_puesto = False
-        puestos_verificados_matriz = 0
+        driver = Conductor(driver_name, driver_birth_date, driver_sex, driver_identity_document)
+        assign_parking_spot = False
+        verified_spots_matrix = 0
      
-        if conductor.comprobar_mayoria_edad():
-            MÁXIMO_ANTIGÜEDAD = 10
-            if self.determinar_años_de_auto(año_fabricación_vehículo) <= MÁXIMO_ANTIGÜEDAD:
-                for fila in range(0, self.filas):
-                    for columna in range(0, self.columnas_filas):
-                        puestos_verificados_matriz += 1
+        if driver.check_legal_age():
+            MAX_VEHICLE_AGE = 10
+            if self.determine_vehicle_age_years(vehicle_manufacture_year) <= MAX_VEHICLE_AGE:
+                for row in range(0, self.rows):
+                    for column in range(0, self.columns):
+                        verified_spots_matrix += 1
                 
-                        if self.parqueadero[fila][columna] is None:
-                            if self.calcular_costo_puesto(self.letras_filas[fila], columna) == precio:
+                        if self.parking_lot[row][column] is None:
+                            if self.calculate_spot_cost(self.row_letters[row], column) == price:
                           
-                                if conductor not in self.registro_conductores:
-                                    self.registro_conductores.append(conductor)
-                                self.asignar_vehículo(marca_vehículo, matrícula_vehículo, año_fabricación_vehículo, documento_identidad_del_conductor)
-                                self.parqueadero[fila][columna] = self.registro_vehículos[((len(self.registro_vehículos))-1)]
-                                self.parqueadero[fila][columna].puesto_asignado = (self.letras_filas[fila], columna+1)
-                                self.determinar_hora_ingreso_vehículo(matrícula_vehículo)                                
-                                return (self.letras_filas[fila], columna+1)
+                                if driver not in self.driver_records:
+                                    self.driver_records.append(driver)
+                                self.assign_vehicle(vehicle_brand, vehicle_license_plate, vehicle_manufacture_year, driver_identity_document)
+                                self.parking_lot[row][column] = self.vehicle_records[((len(self.vehicle_records))-1)]
+                                self.parking_lot[row][column].assigned_spot = (self.row_letters[row], column+1)
+                                self.determine_vehicle_entry_time(vehicle_license_plate)                                
+                                return (self.row_letters[row], column+1)
                         
-                if puestos_verificados_matriz == self.cantidad_puestos_parqueadero:
+                if verified_spots_matrix == self.parking_spot_count:
                     raise ValueError("No se encontró puestos disponibles con ese precio")
             else:
                 raise ValueError("El auto no debe tener más de 10 años de antigüedad")
         else:
             raise ValueError("El conductor debe ser mayor de edad")
-        return asignar_puesto
+        return assign_parking_spot
     
     #--------------------------------- HISTORIA USUARIO #3 -------------------------------------------
         
-    def mostrar_puestos_ocupados(self):
-        ocupado = [["Disponible" for _ in range(self.filas)] for _ in range(self.columnas_filas)]
+    def show_occupied_spots(self):
+        occupied = [["Disponible" for _ in range(self.rows)] for _ in range(self.columns)]
 
-        for fila in range(0, self.filas):
-            for columna in range(0, self.columnas_filas):
-                if self.parqueadero[fila][columna] is not None:
-                    ocupado[fila][columna] = "Ocupado"
-        return ocupado
+        for row in range(0, self.rows):
+            for column in range(0, self.columns):
+                if self.parking_lot[row][column] is not None:
+                    occupied[row][column] = "Ocupado"
+        return occupied
     
-    def imprimir_matriz_cuadrada(self):
-        matriz = self.mostrar_puestos_ocupados()
+    def print_square_matrix(self):
+        matrix = self.show_occupied_spots()
 
-        for fila in matriz:
-            print(" ".join(f"{elemento:10}" for elemento in fila))
+        for row in matrix:
+            print(" ".join(f"{element:10}" for element in row))
     
     #--------------------------------- HISTORIA USUARIO #4 -------------------------------------------
             
                   
-    def determinar_vehículo_en_casilla(self, letra_fila:str, columna:int):
-        if len(letra_fila.strip()) == 0: 
+    def determine_vehicle_in_cell(self, row_letter:str, column:int):
+        if len(row_letter.strip()) == 0: 
             raise ValueError("La cadena la letra de la fila no puede estar vacía")
         
-        if letra_fila not in self.letras_filas: 
+        if row_letter not in self.row_letters: 
             raise ValueError("La letra de la fila debe estar en el rango estipulado")
         
-        if columna not in range(1, (self.columnas_filas +1)):
+        if column not in range(1, (self.columns +1)):
             raise ValueError("La columna ingresada debe estar entre el rango estipulado")
         
-        vehículo_en_casilla = None
-        índice_fila = self.letras_filas.index(letra_fila)
-        índice_columna = columna - 1
-        conductor_vehículo_en_casilla = None
+        vehicle_in_cell = None
+        row_index = self.row_letters.index(row_letter)
+        column_index = column - 1
+        vehicle_driver_in_cell = None
 
-        if self.parqueadero[índice_fila][índice_columna] is not None: 
-            vehículo_en_casilla = self.parqueadero[índice_fila][índice_columna]
+        if self.parking_lot[row_index][column_index] is not None: 
+            vehicle_in_cell = self.parking_lot[row_index][column_index]
 
-            for conductor in self.registro_conductores:
-                if conductor.documento_identidad_conductor == vehículo_en_casilla.dueño_del_vehículo: 
-                    conductor_vehículo_en_casilla = conductor
+            for driver in self.driver_records:
+                if driver.driver_identity_document == vehicle_in_cell.vehicle_owner: 
+                    vehicle_driver_in_cell = driver
 
-        return (vehículo_en_casilla, conductor_vehículo_en_casilla)
+        return (vehicle_in_cell, vehicle_driver_in_cell)
     
-    def determinar_ubicación_vehículo(self, matrícula_vehículo : str): 
-        if len(matrícula_vehículo.strip()) == 0: 
+    def determine_vehicle_location(self, vehicle_license_plate : str): 
+        if len(vehicle_license_plate.strip()) == 0: 
             raise ValueError("la cadena con la matrícula del vehículo no puede estar vacía")
         
-        for fila in range(0, self.filas):
-            for columna in range(0, self.columnas_filas):
-                if self.parqueadero[fila][columna] is not None:
-                    if self.parqueadero[fila][columna].matrícula_vehículo == matrícula_vehículo:
-                        return (self.letras_filas[fila], columna+1)
+        for row in range(0, self.rows):
+            for column in range(0, self.columns):
+                if self.parking_lot[row][column] is not None:
+                    if self.parking_lot[row][column].vehicle_license_plate == vehicle_license_plate:
+                        return (self.row_letters[row], column+1)
         return None
                     
     #--------------------------------- HISTORIA USUARIO #5-6 -------------------------------------------
 
-    def determinar_hora_egreso_vehículo(self, matrícula_vehículo : str,):
-        if len(matrícula_vehículo.strip()) == 0: 
+    def determine_vehicle_exit_time(self, vehicle_license_plate : str,):
+        if len(vehicle_license_plate.strip()) == 0: 
             raise ValueError("la cadena con la matrícula del vehículo no puede estar vacía")
         
-        for fila in range(0, self.filas):
-            for columna in range(0, self.columnas_filas):
-                if self.parqueadero[fila][columna] is not None:
-                    if self.parqueadero[fila][columna].matrícula_vehículo == matrícula_vehículo:
-                        self.parqueadero[fila][columna].hora_egreso_vehículo = datetime.now()
-                        return self.parqueadero[fila][columna].hora_egreso_vehículo
+        for row in range(0, self.rows):
+            for column in range(0, self.columns):
+                if self.parking_lot[row][column] is not None:
+                    if self.parking_lot[row][column].vehicle_license_plate == vehicle_license_plate:
+                        self.parking_lot[row][column].vehicle_exit_time = datetime.now()
+                        return self.parking_lot[row][column].vehicle_exit_time
     
-    def determinar_salida_de_vehículo_parqueadero(self, matrícula_vehículo : str): 
-        if len(matrícula_vehículo.strip()) == 0: 
+    def determine_vehicle_exit_from_parking(self, vehicle_license_plate : str): 
+        if len(vehicle_license_plate.strip()) == 0: 
             raise ValueError("la cadena con la matrícula del vehículo no puede estar vacía")
         
-        for fila in range(0, self.filas):
-            for columna in range(0, self.columnas_filas):
-                if self.parqueadero[fila][columna] is not None:
-                    if self.parqueadero[fila][columna].matrícula_vehículo == matrícula_vehículo:
-                        self.parqueadero[fila][columna] = None
+        for row in range(0, self.rows):
+            for column in range(0, self.columns):
+                if self.parking_lot[row][column] is not None:
+                    if self.parking_lot[row][column].vehicle_license_plate == vehicle_license_plate:
+                        self.parking_lot[row][column] = None
                         break
 
-    def determinar_horas_vehículo_parqueadero(self, matrícula_vehículo: str):
-        if len(matrícula_vehículo.strip()) == 0:
+    def determine_vehicle_parking_hours(self, vehicle_license_plate: str):
+        if len(vehicle_license_plate.strip()) == 0:
             raise ValueError("La cadena con la matrícula del vehículo no puede estar vacía")
         
-        hora_salida_vehículo = self.determinar_hora_egreso_vehículo(matrícula_vehículo)
-        if hora_salida_vehículo is None:
+        vehicle_departure_time = self.determine_vehicle_exit_time(vehicle_license_plate)
+        if vehicle_departure_time is None:
             raise ValueError("La hora de egreso del vehículo no está registrada")
         
-        for fila in range(self.filas):
-            for columna in range(self.columnas_filas):
-                espacio = self.parqueadero[fila][columna]
-                if espacio and espacio.matrícula_vehículo == matrícula_vehículo:
-                    hora_ingreso_vehículo = espacio.hora_ingreso_vehículo
-                    if hora_ingreso_vehículo is None:
+        for row in range(self.rows):
+            for column in range(self.columns):
+                space = self.parking_lot[row][column]
+                if space and space.vehicle_license_plate == vehicle_license_plate:
+                    vehicle_entry_time = space.vehicle_entry_time
+                    if vehicle_entry_time is None:
                         raise ValueError("La hora de ingreso del vehículo no está registrada")
-                    diferencia_horas = ((hora_salida_vehículo - hora_ingreso_vehículo).total_seconds() // 3600) + 1
-                    return int(diferencia_horas)
+                    hour_difference = ((vehicle_departure_time - vehicle_entry_time).total_seconds() // 3600) + 1
+                    return int(hour_difference)
         
         raise ValueError("El vehículo con la matrícula proporcionada no se encontró en el parqueadero")
 
 
-    def determinar_valor_a_pagar_vehículo(self, matrícula_vehículo : str):
-        if len(matrícula_vehículo.strip()) == 0: 
+    def determine_vehicle_amount_to_pay(self, vehicle_license_plate : str):
+        if len(vehicle_license_plate.strip()) == 0: 
             raise ValueError("la cadena con la matrícula del vehículo no puede estar vacía")
         
-        calcular_costo_casilla = 0
-        calcular_horas_estadas_vehículo = 0
-        valor_a_pagar_vehículo = 0
-        for fila in range(self.filas):
-            for columna in range(self.columnas_filas):
-                if self.parqueadero[fila][columna] is not None:
-                    if self.parqueadero[fila][columna].matrícula_vehículo == matrícula_vehículo: 
+        calculate_cell_cost = 0
+        calculate_vehicle_stay_hours = 0
+        vehicle_amount_to_pay = 0
+        for row in range(self.rows):
+            for column in range(self.columns):
+                if self.parking_lot[row][column] is not None:
+                    if self.parking_lot[row][column].vehicle_license_plate == vehicle_license_plate: 
                             
-                        calcular_costo_casilla = self.calcular_costo_puesto(self.parqueadero[fila][columna].puesto_asignado[0], self.parqueadero[fila][columna].puesto_asignado[1])
-                        calcular_horas_estadas_vehículo = self.determinar_horas_vehículo_parqueadero(matrícula_vehículo)
-                        valor_a_pagar_vehículo = (calcular_costo_casilla * calcular_horas_estadas_vehículo)
-                        self.parqueadero[fila][columna].valor_a_pagar = valor_a_pagar_vehículo
-                        self.determinar_salida_de_vehículo_parqueadero(matrícula_vehículo)
+                        calculate_cell_cost = self.calculate_spot_cost(self.parking_lot[row][column].assigned_spot[0], self.parking_lot[row][column].assigned_spot[1])
+                        calculate_vehicle_stay_hours = self.determine_vehicle_parking_hours(vehicle_license_plate)
+                        vehicle_amount_to_pay = (calculate_cell_cost * calculate_vehicle_stay_hours)
+                        self.parking_lot[row][column].amount_to_pay = vehicle_amount_to_pay
+                        self.determine_vehicle_exit_from_parking(vehicle_license_plate)
 
-                        return valor_a_pagar_vehículo
+                        return vehicle_amount_to_pay
 
     #--------------------------------- HISTORIA USUARIO #7 -------------------------------------------
 
-    def puestos_vendidos(self): 
-        puestos_vendidos = []
+    def sold_spots(self): 
+        sold_spots = []
 
-        for vehículo in self.registro_vehículos:
-            if vehículo.hora_egreso_vehículo != 0:
-                puesto = vehículo.puesto_asignado
-                valor_total_pago_puesto = vehículo.valor_a_pagar
-                puestos_vendidos.append((puesto, valor_total_pago_puesto))
+        for vehicle in self.vehicle_records:
+            if vehicle.vehicle_exit_time != 0:
+                spot = vehicle.assigned_spot
+                spot_total_payment = vehicle.amount_to_pay
+                sold_spots.append((spot, spot_total_payment))
 
-        return puestos_vendidos
+        return sold_spots
 
-    def determinar_dinero_ingresado(self): 
-        dinero_total_ingresado = 0 
-        registro_puestos_vendidos = self.puestos_vendidos()
-        for casilla in range(0, len(registro_puestos_vendidos)): 
-            dinero_total_ingresado += registro_puestos_vendidos[casilla][1]
-        return dinero_total_ingresado
+    def determine_received_money(self): 
+        total_income = 0 
+        sold_spot_records = self.sold_spots()
+        for cell in range(0, len(sold_spot_records)): 
+            total_income += sold_spot_records[cell][1]
+        return total_income
     
-    def determinar_cantidad_vehículos_ingresados(self): 
-        matrículas_registradas = []
-        for vehículo in self.registro_vehículos:
-            if vehículo.matrícula_vehículo not in matrículas_registradas:
-                matrículas_registradas.append(vehículo.matrícula_vehículo)
+    def determine_vehicles_entered_count(self): 
+        registered_license_plates = []
+        for vehicle in self.vehicle_records:
+            if vehicle.vehicle_license_plate not in registered_license_plates:
+                registered_license_plates.append(vehicle.vehicle_license_plate)
     
-        cantidad_vehículos_ingresados = int(len(matrículas_registradas))
-        return cantidad_vehículos_ingresados
+        vehicles_entered_count = int(len(registered_license_plates))
+        return vehicles_entered_count
     
-    def determinar_cantidad_puestos_utilizados(self): 
-        total_puestos_utilizados = 0 
-        registro_puestos_vendidos = self.puestos_vendidos()
-        total_puestos_utilizados = int(len(registro_puestos_vendidos))
-        return total_puestos_utilizados 
+    def determine_used_spot_count(self): 
+        total_used_spots = 0 
+        sold_spot_records = self.sold_spots()
+        total_used_spots = int(len(sold_spot_records))
+        return total_used_spots 
     
         #--------------------------------- HISTORIA USUARIO #8 -------------------------------------------
-    def determinar_cantidad_zonas_parqueaderos(self): 
-        zonas_parqueaderos_precios = {}
-        precio_máximo = int(self.determinar_precio_máximo_puesto_parqueadero())
-        precio_mínimo = int(self.determinar_precio_mínimo_puesto_parqueadero())
-        cantidad_zonas_parqueadero = int(precio_máximo/precio_mínimo)
+    def determine_parking_zone_count(self): 
+        parking_zone_prices = {}
+        max_price = int(self.determine_max_spot_price())
+        min_price = int(self.determine_min_spot_price())
+        parking_zone_count = int(max_price/min_price)
 
-        for zona in range(1, cantidad_zonas_parqueadero+1):
-            zonas_parqueaderos_precios.setdefault(f"Zona {zona}", zona*precio_mínimo)
-        return zonas_parqueaderos_precios
+        for zone in range(1, parking_zone_count+1):
+            parking_zone_prices.setdefault(f"Zona {zone}", zone*min_price)
+        return parking_zone_prices
     
-    def determinar_zona_más_utilizada(self): 
-        precio_máximo = self.determinar_precio_máximo_puesto_parqueadero()
-        precio_mínimo = self.determinar_precio_mínimo_puesto_parqueadero()
-        cantidad_zonas_parqueadero = int(precio_máximo/precio_mínimo)
+    def determine_most_used_zone(self): 
+        max_price = self.determine_max_spot_price()
+        min_price = self.determine_min_spot_price()
+        parking_zone_count = int(max_price/min_price)
 
-        zonas = [0 for _ in range(cantidad_zonas_parqueadero)]
-        if len(self.registro_vehículos) == 0:
+        zones = [0 for _ in range(parking_zone_count)]
+        if len(self.vehicle_records) == 0:
             return None
         else:
-            for vehículos in self.registro_vehículos:
-                zonas[int(((self.calcular_costo_puesto(vehículos.puesto_asignado[0], vehículos.puesto_asignado[1]))/precio_mínimo)-1)]+=1
-            zona_mayor = 0
+            for vehicles in self.vehicle_records:
+                zones[int(((self.calculate_spot_cost(vehicles.assigned_spot[0], vehicles.assigned_spot[1]))/min_price)-1)]+=1
+            max_zone_index = 0
 
-            for zona in range(int(cantidad_zonas_parqueadero-1)):
-                if zonas[zona_mayor] < zonas[zona+1]:
-                    zona_mayor = zona+1
-        return (zona_mayor+1)*precio_mínimo
+            for zone in range(int(parking_zone_count-1)):
+                if zones[max_zone_index] < zones[zone+1]:
+                    max_zone_index = zone+1
+        return (max_zone_index+1)*min_price
 
-    def determinar_tasa_ocupación(self): 
-        cantidad_puestos_ocupados = 0
-        tasa_ocupación = 0
-        cantidad_puestos_parqueadero = self.cantidad_puestos_parqueadero
+    def determine_occupancy_rate(self): 
+        occupied_spot_count = 0
+        occupancy_rate = 0
+        parking_spot_count = self.parking_spot_count
 
-        for fila in range(0, self.filas):
-            for columna in range(0, self.columnas_filas):
-                if self.parqueadero[fila][columna] is not None:
-                    cantidad_puestos_ocupados += 1
+        for row in range(0, self.rows):
+            for column in range(0, self.columns):
+                if self.parking_lot[row][column] is not None:
+                    occupied_spot_count += 1
         
-        tasa_ocupación = (cantidad_puestos_ocupados / cantidad_puestos_parqueadero) * 100
+        occupancy_rate = (occupied_spot_count / parking_spot_count) * 100
 
-        return round(tasa_ocupación, 2)
+        return round(occupancy_rate, 2)
     
         #--------------------------------- HISTORIA USUARIO #9 -------------------------------------------
 
-    def determinar_tasa_ocupación_hombres(self):
-        total_conductores = 0
-        conductores_masculinos = 0
+    def determine_male_occupancy_rate(self):
+        total_drivers = 0
+        male_drivers = 0
         
-        for fila in range(self.filas):
-            for columna in range(self.columnas_filas):
-                if self.parqueadero[fila][columna] is not None:
-                    documento = self.parqueadero[fila][columna].dueño_del_vehículo
+        for row in range(self.rows):
+            for column in range(self.columns):
+                if self.parking_lot[row][column] is not None:
+                    document = self.parking_lot[row][column].vehicle_owner
                 
-                    for conductor in self.registro_conductores:
-                        if conductor.documento_identidad_conductor == documento:
-                            total_conductores += 1
-                            if conductor.sexo_conductor == "M":
-                                conductores_masculinos += 1
+                    for driver in self.driver_records:
+                        if driver.driver_identity_document == document:
+                            total_drivers += 1
+                            if driver.driver_sex == "M":
+                                male_drivers += 1
                             break  
-        if total_conductores == 0:
+        if total_drivers == 0:
             return 0
         
-        tasa_ocupacion_hombres_parqueadero = (conductores_masculinos / total_conductores) * 100
+        male_parking_occupancy_rate = (male_drivers / total_drivers) * 100
 
-        return round(tasa_ocupacion_hombres_parqueadero, 2)
+        return round(male_parking_occupancy_rate, 2)
 
-    def determinar_tasa_ocupación_mujeres(self): 
-        lista_sexo_biológico_conductores_usando_parqueadero = []
-        contador_sexo_femenino_en_conductores = 0
-        tasa_ocupación_mujeres_parqueadero = 0
-        for fila in range(0, self.filas):
-            for columna in range(0, self.columnas_filas):
-                if self.parqueadero[fila][columna] is not None:
-                    for conductor in self.registro_conductores: 
-                        if self.parqueadero[fila][columna].dueño_del_vehículo == conductor.documento_identidad_conductor:
-                            lista_sexo_biológico_conductores_usando_parqueadero.append(conductor.sexo_conductor) 
-        if len(lista_sexo_biológico_conductores_usando_parqueadero) == 0:
+    def determine_female_occupancy_rate(self): 
+        driver_gender_list_using_parking = []
+        female_driver_count = 0
+        female_parking_occupancy_rate = 0
+        for row in range(0, self.rows):
+            for column in range(0, self.columns):
+                if self.parking_lot[row][column] is not None:
+                    for driver in self.driver_records: 
+                        if self.parking_lot[row][column].vehicle_owner == driver.driver_identity_document:
+                            driver_gender_list_using_parking.append(driver.driver_sex) 
+        if len(driver_gender_list_using_parking) == 0:
             return 0
-        for iteración_casilla in range(0, len(lista_sexo_biológico_conductores_usando_parqueadero)):
-           if lista_sexo_biológico_conductores_usando_parqueadero[iteración_casilla] == "F":
-               contador_sexo_femenino_en_conductores += 1
+        for cell_iteration in range(0, len(driver_gender_list_using_parking)):
+           if driver_gender_list_using_parking[cell_iteration] == "F":
+               female_driver_count += 1
 
-        tasa_ocupación_mujeres_parqueadero = (contador_sexo_femenino_en_conductores/len(lista_sexo_biológico_conductores_usando_parqueadero))*100
+        female_parking_occupancy_rate = (female_driver_count/len(driver_gender_list_using_parking))*100
 
-        return round(tasa_ocupación_mujeres_parqueadero, 2)
+        return round(female_parking_occupancy_rate, 2)
 
     
     #--------------------------------- HISTORIA USUARIO #10 -------------------------------------------
     
-    def determinar_porcentaje_de_vehículos_por_marca(self):
-        total_vehículos_parqueados = 0
-        cantidad_por_marcas = {}
-        for vehículo in self.registro_vehículos:
-            if vehículo.hora_egreso_vehículo is None:
-                marca = vehículo.marca_vehículo
-                if marca not in cantidad_por_marcas:
-                    cantidad_por_marcas[marca] = 0
-                cantidad_por_marcas[marca] += 1
-                total_vehículos_parqueados += 1
+    def determine_vehicle_percentage_by_brand(self):
+        total_parked_vehicles = 0
+        quantity_by_brand = {}
+        for vehicle in self.vehicle_records:
+            if vehicle.vehicle_exit_time is None:
+                brand = vehicle.vehicle_brand
+                if brand not in quantity_by_brand:
+                    quantity_by_brand[brand] = 0
+                quantity_by_brand[brand] += 1
+                total_parked_vehicles += 1
         
 
-        porcentajes_por_marca = {}
-        for marca, cantidad in cantidad_por_marcas.items():
-            porcentajes_por_marca[marca] = (cantidad / total_vehículos_parqueados) * 100
+        percentages_by_brand = {}
+        for brand, quantity in quantity_by_brand.items():
+            percentages_by_brand[brand] = (quantity / total_parked_vehicles) * 100
 
-        return porcentajes_por_marca
+        return percentages_by_brand
     
-    def obtener_porcentaje_por_marca(self, marca_vehículo : str):
-        if len(marca_vehículo.strip())  == 0: 
+    def get_percentage_by_brand(self, vehicle_brand : str):
+        if len(vehicle_brand.strip())  == 0: 
             raise ValueError("La cadena con la marca del vehículo no puede estar vacía") 
         
-        porcentajes = self.determinar_porcentaje_de_vehículos_por_marca()
-        return porcentajes.get(marca_vehículo, 0)
+        percentages = self.determine_vehicle_percentage_by_brand()
+        return percentages.get(vehicle_brand, 0)
     
-    def determinar_porcentaje_de_vehículos_por_año_fabricación(self):
-        total_vehículos_parqueados = 0
-        cantidad_por_años = {}
-        for vehículo in self.registro_vehículos:
-            if vehículo.hora_egreso_vehículo is None:
-                año_fabricación = vehículo.año_fabricación_vehículo
-                if año_fabricación not in cantidad_por_años:
-                    cantidad_por_años[año_fabricación] = 0
-                cantidad_por_años[año_fabricación] += 1
-                total_vehículos_parqueados += 1
+    def determine_vehicle_percentage_by_manufacture_year(self):
+        total_parked_vehicles = 0
+        quantity_by_year = {}
+        for vehicle in self.vehicle_records:
+            if vehicle.vehicle_exit_time is None:
+                manufacture_year = vehicle.vehicle_manufacture_year
+                if manufacture_year not in quantity_by_year:
+                    quantity_by_year[manufacture_year] = 0
+                quantity_by_year[manufacture_year] += 1
+                total_parked_vehicles += 1
         
 
-        porcentajes_por_años = {}
-        for año_fabricación, cantidad in cantidad_por_años.items():
-            porcentajes_por_años[año_fabricación] = (cantidad / total_vehículos_parqueados) * 100
+        percentages_by_year = {}
+        for manufacture_year, quantity in quantity_by_year.items():
+            percentages_by_year[manufacture_year] = (quantity / total_parked_vehicles) * 100
 
-        return porcentajes_por_años
+        return percentages_by_year
